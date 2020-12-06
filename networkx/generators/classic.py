@@ -12,8 +12,10 @@ in this module return a Graph class (i.e. a simple, undirected graph).
 
 import itertools
 
-import networkx as nx
-from networkx.utils import nodes_or_number
+
+from ..classes.graph import Graph
+from .. import utils
+from .. import exception
 
 __all__ = [
     "balanced_tree",
@@ -161,19 +163,19 @@ def barbell_graph(m1, m2, create_using=None):
 
     """
     if m1 < 2:
-        raise nx.NetworkXError("Invalid graph description, m1 should be >=2")
+        raise exception.NetworkXError("Invalid graph description, m1 should be >=2")
     if m2 < 0:
-        raise nx.NetworkXError("Invalid graph description, m2 should be >=0")
+        raise exception.NetworkXError("Invalid graph description, m2 should be >=0")
 
     # left barbell
     G = complete_graph(m1, create_using)
     if G.is_directed():
-        raise nx.NetworkXError("Directed Graph not supported")
+        raise exception.NetworkXError("Directed Graph not supported")
 
     # connecting path
     G.add_nodes_from(range(m1, m1 + m2 - 1))
     if m2 > 1:
-        G.add_edges_from(nx.utils.pairwise(range(m1, m1 + m2)))
+        G.add_edges_from(utils.pairwise(range(m1, m1 + m2)))
     # right barbell
     G.add_edges_from(
         (u, v) for u in range(m1 + m2, 2 * m1 + m2) for v in range(u + 1, 2 * m1 + m2)
@@ -213,7 +215,7 @@ def binomial_tree(n):
     return G
 
 
-@nodes_or_number(0)
+@utils.nodes_or_number(0)
 def complete_graph(n, create_using=None):
     """Return the complete graph `K_n` with n nodes.
 
@@ -341,7 +343,7 @@ def circulant_graph(n, offsets, create_using=None):
     return G
 
 
-@nodes_or_number(0)
+@utils.nodes_or_number(0)
 def cycle_graph(n, create_using=None):
     """Returns the cycle graph $C_n$ of cyclically connected nodes.
 
@@ -362,7 +364,7 @@ def cycle_graph(n, create_using=None):
     """
     n_orig, nodes = n
     G = empty_graph(nodes, create_using)
-    G.add_edges_from(nx.utils.pairwise(nodes))
+    G.add_edges_from(utils.pairwise(nodes))
     G.add_edge(nodes[-1], nodes[0])
     return G
 
@@ -376,9 +378,9 @@ def dorogovtsev_goltsev_mendes_graph(n, create_using=None):
     """
     G = empty_graph(0, create_using)
     if G.is_directed():
-        raise nx.NetworkXError("Directed Graph not supported")
+        raise exception.NetworkXError("Directed Graph not supported")
     if G.is_multigraph():
-        raise nx.NetworkXError("Multigraph not supported")
+        raise exception.NetworkXError("Multigraph not supported")
 
     G.add_edge(0, 1)
     if n == 0:
@@ -394,8 +396,8 @@ def dorogovtsev_goltsev_mendes_graph(n, create_using=None):
     return G
 
 
-@nodes_or_number(0)
-def empty_graph(n=0, create_using=None, default=nx.Graph):
+@utils.nodes_or_number(0)
+def empty_graph(n=0, create_using=None, default=Graph):
     """Returns the empty graph with n nodes and zero edges.
 
     Parameters
@@ -498,14 +500,14 @@ def ladder_graph(n, create_using=None):
     """
     G = empty_graph(2 * n, create_using)
     if G.is_directed():
-        raise nx.NetworkXError("Directed Graph not supported")
-    G.add_edges_from(nx.utils.pairwise(range(n)))
-    G.add_edges_from(nx.utils.pairwise(range(n, 2 * n)))
+        raise exception.NetworkXError("Directed Graph not supported")
+    G.add_edges_from(utils.pairwise(range(n)))
+    G.add_edges_from(utils.pairwise(range(n, 2 * n)))
     G.add_edges_from((v, v + n) for v in range(n))
     return G
 
 
-@nodes_or_number([0, 1])
+@utils.nodes_or_number([0, 1])
 def lollipop_graph(m, n, create_using=None):
     """Returns the Lollipop Graph; `K_m` connected to `P_n`.
 
@@ -538,18 +540,18 @@ def lollipop_graph(m, n, create_using=None):
     if isinstance(m, int):
         n_nodes = [len(m_nodes) + i for i in n_nodes]
     if M < 2:
-        raise nx.NetworkXError("Invalid graph description, m should be >=2")
+        raise exception.NetworkXError("Invalid graph description, m should be >=2")
     if N < 0:
-        raise nx.NetworkXError("Invalid graph description, n should be >=0")
+        raise exception.NetworkXError("Invalid graph description, n should be >=0")
 
     # the ball
     G = complete_graph(m_nodes, create_using)
     if G.is_directed():
-        raise nx.NetworkXError("Directed Graph not supported")
+        raise exception.NetworkXError("Directed Graph not supported")
     # the stick
     G.add_nodes_from(n_nodes)
     if N > 1:
-        G.add_edges_from(nx.utils.pairwise(n_nodes))
+        G.add_edges_from(utils.pairwise(n_nodes))
     # connect ball to stick
     if M > 0 and N > 0:
         G.add_edge(m_nodes[-1], n_nodes[0])
@@ -566,7 +568,7 @@ def null_graph(create_using=None):
     return G
 
 
-@nodes_or_number(0)
+@utils.nodes_or_number(0)
 def path_graph(n, create_using=None):
     """Returns the Path graph `P_n` of linearly connected nodes.
 
@@ -581,11 +583,11 @@ def path_graph(n, create_using=None):
     """
     n_name, nodes = n
     G = empty_graph(nodes, create_using)
-    G.add_edges_from(nx.utils.pairwise(nodes))
+    G.add_edges_from(utils.pairwise(nodes))
     return G
 
 
-@nodes_or_number(0)
+@utils.nodes_or_number(0)
 def star_graph(n, create_using=None):
     """Return the star graph
 
@@ -610,7 +612,7 @@ def star_graph(n, create_using=None):
     first = nodes[0]
     G = empty_graph(nodes, create_using)
     if G.is_directed():
-        raise nx.NetworkXError("Directed Graph not supported")
+        raise exception.NetworkXError("Directed Graph not supported")
     G.add_edges_from((first, v) for v in nodes[1:])
     return G
 
@@ -647,14 +649,14 @@ def turan_graph(n, r):
     """
 
     if not 1 <= r <= n:
-        raise nx.NetworkXError("Must satisfy 1 <= r <= n")
+        raise exception.NetworkXError("Must satisfy 1 <= r <= n")
 
     partitions = [n // r] * (r - (n % r)) + [n // r + 1] * (n % r)
     G = complete_multipartite_graph(*partitions)
     return G
 
 
-@nodes_or_number(0)
+@utils.nodes_or_number(0)
 def wheel_graph(n, create_using=None):
     """Return the wheel graph
 
@@ -676,7 +678,7 @@ def wheel_graph(n, create_using=None):
         return G
     G = star_graph(nodes, create_using)
     if len(G) > 2:
-        G.add_edges_from(nx.utils.pairwise(nodes[1:]))
+        G.add_edges_from(utils.pairwise(nodes[1:]))
         G.add_edge(nodes[-1], nodes[1])
     return G
 
@@ -737,14 +739,14 @@ def complete_multipartite_graph(*subset_sizes):
     complete_bipartite_graph
     """
     # The complete multipartite graph is an undirected simple graph.
-    G = nx.Graph()
+    G = Graph()
 
     if len(subset_sizes) == 0:
         return G
 
     # set up subsets of nodes
     try:
-        extents = nx.utils.pairwise(itertools.accumulate((0,) + subset_sizes))
+        extents = utils.pairwise(itertools.accumulate((0,) + subset_sizes))
         subsets = [range(start, end) for start, end in extents]
     except TypeError:
         subsets = subset_sizes
@@ -755,7 +757,9 @@ def complete_multipartite_graph(*subset_sizes):
         for (i, subset) in enumerate(subsets):
             G.add_nodes_from(subset, subset=i)
     except TypeError as e:
-        raise nx.NetworkXError("Arguments must be all ints or all iterables") from e
+        raise exception.NetworkXError(
+            "Arguments must be all ints or all iterables"
+        ) from e
 
     # Across subsets, all nodes should be adjacent.
     # We can use itertools.combinations() because undirected.
