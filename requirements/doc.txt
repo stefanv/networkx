@@ -5,3 +5,7 @@ numpydoc>=1.1
 pillow>=8.0
 nb2plots>=0.6
 texext>=0.6.6
+momepy
+contextily
+osmnx
+descartes
