@@ -21,11 +21,5 @@ G = nx.barbell_graph(6, 3)
 for n in G:
     G.nodes[n]["name"] = n
 
-# write json formatted data
-d = nx.json_graph.node_link_data(G)  # node-link format to serialize
 
-# write json
-json.dump(d, open("force/force.json", "w"))
-print("Wrote node-link JSON data to force/force.json")
-
-nx.drawing.display_d3js("force/force.json", "force/force.js", "force/force.html")
+nx.drawing.display_d3js(G, js_path="force/force.js", html_path="force/force.html")
